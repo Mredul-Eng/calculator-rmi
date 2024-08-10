@@ -2,18 +2,35 @@ package server;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Stack;
 
 public class CalculatorImplementation extends UnicastRemoteObject implements Calculator {
 
-    Stack<Integer> stack = new Stack<>();
+    //this is for shared stack which is used by multiple clients.
+
+    // Stack<Integer> stack = new Stack<>();
+
+    // public CalculatorImplementation() throws RemoteException{
+    //     super();
+    // }
+
+    //initialize map for each client assosiated with client id.
+    private static Map<Integer, Stack<Integer>> clientStacks = new HashMap<>();
 
     public CalculatorImplementation() throws RemoteException{
-        super();
+            super();
+        }
+    
+    private static Stack<Integer> getClientStack(int clientId){
+        return clientStacks.computeIfAbsent(clientId, k -> new Stack<>());
     }
+
     @Override
     //this method push the value on the top of the stack
-    public synchronized void pushValue(int val) throws RemoteException {
+    public synchronized void pushValue(int clientId, int val) throws RemoteException {
+        Stack<Integer> stack = getClientStack(clientId);
         stack.push(val);
 
     }
@@ -23,7 +40,8 @@ public class CalculatorImplementation extends UnicastRemoteObject implements Cal
     //if the operator is max, then it will the max value of the stack.
     // if the operator is lcm, then it will return the lcm of stack values. for example, if the stack has 4,5,6 values, then the lcm will be 60.
     // if the operator is gcd, then it will return the gcd of stack values. for example, if the stack has 12,18 values, then the gcd will be 6.
-    public synchronized void pushOperation(String operator) throws RemoteException {
+    public synchronized void pushOperation(int clientId, String operator) throws RemoteException {
+        Stack<Integer> stack = getClientStack(clientId);
         if (!operator.equals("min") && !operator.equals("max") && !operator.equals("lcm") && !operator.equals("gcd")) {
             throw new IllegalArgumentException("Invalid operator: " + operator);
         }
@@ -82,7 +100,8 @@ public class CalculatorImplementation extends UnicastRemoteObject implements Cal
 
     @Override
     //this method pop or return the last element of the stack if the stack is not empty.
-    public synchronized int pop() throws RemoteException {
+    public synchronized int pop(int clientId) throws RemoteException {
+        Stack<Integer> stack = getClientStack(clientId);
         if(!stack.isEmpty()){
             return stack.pop();
         }
@@ -91,7 +110,8 @@ public class CalculatorImplementation extends UnicastRemoteObject implements Cal
 
     @Override
     //this method return true if the stack is empty otherwise it returns false
-    public synchronized boolean isEmpty() throws RemoteException {
+    public synchronized boolean isEmpty(int clientId) throws RemoteException {
+        Stack<Integer> stack = getClientStack(clientId);
         return stack.isEmpty();
     }
 
@@ -100,7 +120,8 @@ public class CalculatorImplementation extends UnicastRemoteObject implements Cal
     // the execution of program.time will be taken in millisecond.after the time is over the method will return the last element of the stack.
     //for example, if you want to pause the execution of the program for 2 seconds then take 2000 milliseconds in thread.sleep()method.
     //after 2 second the method will return the last element of the stack.
-    public synchronized int delayPop(int millis) throws RemoteException {
+    public synchronized int delayPop(int clientId, int millis) throws RemoteException {
+        Stack<Integer> stack = getClientStack(clientId);
         if(!stack.isEmpty()){
             try {
                 Thread.sleep(millis);
