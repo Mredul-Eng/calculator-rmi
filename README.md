@@ -33,7 +33,8 @@ This project is a simple distributed calculator application using Java RMI (Remo
    javac -d out/production src/server/CalculatorServer.java src/server/CalculatorImplementation.java
    java -cp out/production server.CalculatorServer
 
-2. Compile and start the client
+2. Compile and start the client:
+ ```bash
  javac -d out/production src/client/CalculatorClient.java
  java -cp out/production client.CalculatorClient
 
