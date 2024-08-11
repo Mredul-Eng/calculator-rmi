@@ -1,50 +1,40 @@
 # Java RMI Calculator Application
 
-This project demonstrates a simple distributed system using Java RMI (Remote Method Invocation). It includes a server that provides calculator services and multiple clients that interact with the server concurrently. Each client operates on its own stack, enabling individual computations. The project is designed with multithreading to handle multiple clients simultaneously, and all methods are thoroughly tested using JUnit.
-
-## Table of Contents
-
-- [Overview](#overview)
-- [Project Structure](#project-structure)
-- [Client Workflow](#client-workflow)
-- [Running the Application](#running-the-application)
-- [JUnit Testing Methodology](#junit-testing-methodology)
-
-
 ## Overview
 
-The application consists of the following key components:
+This project is a simple distributed calculator application using Java RMI (Remote Method Invocation). The application allows multiple clients to interact with a remote calculator server simultaneously. Each client can perform operations such as `min`, `max`, `lcm`, and `gcd` on their own stack of integers. The server manages the stacks and operations for each client independently.
 
-- **Calculator Interface (`Calculator.java`)**: Defines the remote operations that the server offers.
-- **Calculator Implementation (`CalculatorImplementation.java`)**: Implements the methods defined in the `Calculator` interface.
-- **Calculator Server (`CalculatorServer.java`)**: Registers the `CalculatorImplementation` with the RMI registry, making it available to remote clients.
-- **Calculator Client (`CalculatorClient.java`)**: A test client that connects to the server and performs various operations by taking user inputs from the terminal.
-- **Client (`Client.java`)**: A runnable class representing individual clients. Multiple instances of this class are used to simulate concurrent clients interacting with the server.
+## Project Structure
 
-## Client Workflow
+- **server/CalculatorServer.java**: Initializes the server and binds the `CalculatorService` to a specific port.
+ 
+- **server/CalculatorImplementation.java**: Implements the `Calculator` interface, providing methods for clients to push values onto a stack, perform operations (min, max, lcm, gcd), and pop values off the stack.
 
-### `CalculatorClient.java`
+- **client/CalculatorClient.java**: Simulates multiple client interactions with the remote calculator service. Each client runs in a separate thread and interacts with the server to perform various operations.
 
-- Starts multiple client threads to simulate concurrent access to the remote calculator service.
-- Each client interacts with the server through a command-line interface, where users can perform operations such as pushing values to the stack, performing calculations, popping values, checking if the stack is empty, and delaying operations.
+- **server/CalculatorServerTest.java**: Contains JUnit tests to verify the correct functionality of the server's methods.
 
-### `Client.java`
+## Features
 
-- Implements the `Runnable` interface and represents an individual client.
-- Connects to the RMI registry, looks up the calculator service, and interacts with it by handling user input commands.
-- Operations include:
-  1. **Push a value to the stack**: Each client can push values to its own stack on the server.
-  2. **Perform an operation**: The client can perform operations (`min`, `max`, `lcm`, `gcd`) on the values in its stack and retrieve the result.
-  3. **Pop a value from the stack**: The client can pop the top value from its stack.
-  4. **Check if the stack is empty**: The client can check whether its stack is empty.
-  5. **Delay pop**: The client can delay the pop operation by a specified amount of time.
+- **pushValue(int clientId, int val)**: Pushes a value onto the stack for the specified client.
+ 
+- **pushOperation(int clientId, String operator)**: Performs an operation (`min`, `max`, `lcm`, `gcd`) on the values in the stack for the specified client.
 
-## Running the Application
+- **pop(int clientId)**: Pops the top value from the stack of the specified client.
+ 
+- **isEmpty(int clientId)**: Checks if the stack of the specified client is empty.
+ 
+- **delayPop(int clientId, int millis)**: Delays the popping of the top value from the stack for a specified number of milliseconds.
 
-1. Ensure that the RMI server is running and accessible.
-2. Compile and run `CalculatorClient.java`. This will start multiple client threads.
-3. Each client thread will prompt the user to enter commands to interact with the calculator service.
+### Running the Server
 
-```bash
-javac CalculatorClient.java
-java CalculatorClient
+1. Compile and start the server:
+   ```bash
+   javac -d out/production src/server/CalculatorServer.java src/server/CalculatorImplementation.java
+   java -cp out/production server.CalculatorServer
+
+2. Compile and start the client
+ javac -d out/production src/client/CalculatorClient.java
+ java -cp out/production client.CalculatorClient
+
+To know more details, please visit my repository (https://github.com/Mredul-Eng/calculator-rmi.git)
