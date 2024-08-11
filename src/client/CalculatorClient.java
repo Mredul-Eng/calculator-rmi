@@ -12,10 +12,7 @@ import server.Calculator;
 public class CalculatorClient {
 
     public static void main(String[] args) {
-        @SuppressWarnings("resource")
-        Scanner input = new Scanner(System.in);
-        System.out.println("Enter the number of clients");
-        int numberOfClients = input.nextInt(); // Number of client threads to simulate
+        int numberOfClients = 5; // Number of client threads to simulate
 
         for (int i = 1; i <= numberOfClients; i++) {
             Thread clientThread = new Thread(new Client(i));
@@ -36,9 +33,9 @@ class Client implements Runnable {
     @Override
     public void run() {
         try {
-            Registry registry = LocateRegistry.getRegistry("192.168.0.103", 1403); //get the port number in which the server will run
+            Registry registry = LocateRegistry.getRegistry("192.168.213.175", 1533); //get the port number in which the server will run
                     Calculator calculator = (Calculator) registry.lookup("CalculatorService");
-                    System.out.println("Client with " + clientID + " is running....");
+                    System.out.println("Client with id " + clientID + " is running....");
                     synchronized(lock){
                         Scanner clientInput = new Scanner(System.in);
                         while (true){
